@@ -1,36 +1,35 @@
-import Map from './components/Map'
 import { useState, useEffect } from 'react'
+import Map from './components/Map'
+import Loader from './components/Loader'
 
 function App() {
-  const [eventData, setEventData] = useState([]);
+  const [eventData, setEventData] = useState([]); // Ensure default empty array
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchEvents = async () => {
       setLoading(true);
       try {
-        const res = await fetch('https://eonet.sci.gsfc.nasa.gov/api/v2.1/events');
+        const res = await fetch('https://data.api.xweather.com/fires/');
         if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-        
+    
         const { events } = await res.json();
-        setEventData(events);
+        setEventData(events || []);
       } catch (error) {
         console.error("Error fetching events:", error);
       } finally {
         setLoading(false);
       }
     };
+    
 
     fetchEvents();
   }, []);
 
-  useEffect(() => {
-    console.log("Updated eventData:", eventData);
-  }, [eventData]);
-
   return (
     <div>
-      {loading ? <h2>Loading...</h2> : <Map eventData={eventData} />}
+      
+      {!loading ? <Map eventData={eventData} /> : <Loader />}
     </div>
   );
 }
